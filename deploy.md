@@ -187,10 +187,36 @@ docker-compose up -d
 ### 方案三：云平台部署
 
 #### 3.1 Vercel部署（前端）
-1. 连接GitHub仓库到Vercel
-2. 设置构建命令：`cd client && npm run build`
-3. 设置输出目录：`client/dist`
-4. 配置环境变量
+
+**重要提示：如果遇到 "vite: command not found" 错误，请按以下步骤解决：**
+
+1. **修复依赖配置**：
+   - 确保 `client/package.json` 中 `vite` 在 `dependencies` 而不是 `devDependencies`
+   - 项目已自动修复此问题
+
+2. **使用根目录 vercel.json 配置**：
+   ```json
+   {
+     "version": 2,
+     "buildCommand": "cd client && npm install && npm run build",
+     "outputDirectory": "client/dist",
+     "installCommand": "cd client && npm install"
+   }
+   ```
+
+3. **部署步骤**：
+   - 连接GitHub仓库到Vercel
+   - Vercel会自动检测到 `vercel.json` 配置
+   - 或手动设置：
+     - 构建命令：`cd client && npm run build`
+     - 输出目录：`client/dist`
+     - 安装命令：`cd client && npm install`
+   - 配置环境变量（如果需要）
+
+4. **常见问题解决**：
+   - 如果构建失败，检查 Node.js 版本（推荐 18.x）
+   - 确保所有依赖都在 `package.json` 中正确声明
+   - 检查构建日志中的具体错误信息
 
 #### 3.2 Railway/Render部署（后端）
 1. 连接GitHub仓库
