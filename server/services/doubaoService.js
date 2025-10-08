@@ -38,7 +38,7 @@ class DoubaoService {
 ${text}`;
       
       const response = await axios.post(
-        `${this.baseUrl}/chat/completions`,
+         `${this.baseUrl}/chat/completions`,
         {
           model: this.textModel,
           messages: [
@@ -192,6 +192,103 @@ ${text}`;
     }
 
     return results;
+  }
+
+  // 文本优化功能
+  async optimizeText(text, optimizationType = 'general') {
+    try {
+      // 根据优化类型构建不同的提示词
+      const optimizationPrompts = {
+        general: `请优化以下文本，使其更适合小红书平台发布。要求：
+1. 保持原意不变
+2. 语言更生动有趣
+3. 适当添加表情符号
+4. 增强可读性和吸引力
+5. 符合小红书用户的阅读习惯
+
+原文本：${text}
+
+请直接返回优化后的文本，不要添加任何解释。`,
+
+        engaging: `请将以下文本改写得更有吸引力和互动性。要求：
+1. 增加情感色彩
+2. 使用更多感叹号和疑问句
+3. 添加适当的表情符号
+4. 让读者产生共鸣
+5. 鼓励互动和评论
+
+原文本：${text}
+
+请直接返回优化后的文本。`,
+
+        professional: `请将以下文本优化为更专业的表达方式。要求：
+1. 语言准确严谨
+2. 逻辑清晰
+3. 去除冗余表达
+4. 增强说服力
+5. 保持简洁明了
+
+原文本：${text}
+
+请直接返回优化后的文本。`,
+
+        casual: `请将以下文本改写得更轻松随意。要求：
+1. 使用口语化表达
+2. 增加亲和力
+3. 适当使用网络流行语
+4. 让文字更有温度
+5. 贴近年轻用户
+
+原文本：${text}
+
+请直接返回优化后的文本。`
+      };
+
+      const prompt = optimizationPrompts[optimizationType] || optimizationPrompts.general;
+
+      const response = await axios.post(
+        `${this.baseUrl}/chat/completions`,
+        {
+          model: this.textModel,
+          messages: [
+            {
+              role: 'system',
+              content: '你是一个专业的文案优化助手，擅长为社交媒体平台优化文本内容。'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          max_tokens: 1000,
+          temperature: 0.7
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`
+          }
+        }
+      );
+
+      const data = response.data;
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('API返回数据格式错误');
+      }
+
+      const optimizedText = data.choices[0].message.content.trim();
+      
+      // 简单的后处理，确保文本质量
+      if (optimizedText.length < 10) {
+        throw new Error('优化结果过短，请重试');
+      }
+
+      return optimizedText;
+    } catch (error) {
+      console.error('Text optimization error:', error);
+      throw new Error(`文本优化失败: ${error.message}`);
+    }
   }
 
   // 构建小红书风格的图片生成提示词

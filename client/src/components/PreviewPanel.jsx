@@ -121,9 +121,9 @@ const PreviewPanel = ({
           }
           
           if (imageUrl) {
-            const filename = cardData.images.length > 1 
-              ? `小红书图片_${imageLabel}_${imageIndex + 1}.png`
-              : `小红书图片_${imageLabel}.png`;
+            // 修复：确保每张图片都有唯一的文件名
+            // 使用卡片索引而不是依赖images数组长度
+            const filename = `小红书图片_${imageLabel}.png`;
             
             allImages.push({ url: imageUrl, filename });
             console.log(`添加图片: ${filename} -> ${imageUrl.substring(0, 50)}...`);
@@ -134,6 +134,7 @@ const PreviewPanel = ({
         console.log(`卡片 ${cardIndex} 是数组格式，包含 ${cardData.length} 张图片`);
         cardData.forEach((imageUrl, imageIndex) => {
           if (imageUrl && typeof imageUrl === 'string') {
+            // 修复：确保每张图片都有唯一的文件名
             const filename = cardData.length > 1 
               ? `小红书图片_${imageLabel}_${imageIndex + 1}.png`
               : `小红书图片_${imageLabel}.png`;
@@ -183,17 +184,43 @@ const PreviewPanel = ({
       async downloadImage(imageUrl, filename) {
         try {
           console.log(`开始下载: ${filename}`);
-          console.log(`图片URL: ${imageUrl.substring(0, 100)}...`);
+          console.log(`图片URL类型: ${imageUrl.startsWith('data:') ? 'base64' : 'URL'}`);
+          
+          let downloadUrl = imageUrl;
+          
+          // 如果是base64数据，直接使用
+          if (imageUrl.startsWith('data:')) {
+            downloadUrl = imageUrl;
+          } else {
+            // 如果是URL，尝试获取图片数据并转换为blob
+            try {
+              const response = await fetch(imageUrl);
+              if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+              }
+              const blob = await response.blob();
+              downloadUrl = URL.createObjectURL(blob);
+            } catch (fetchError) {
+              console.warn(`无法获取图片数据，尝试直接下载: ${fetchError.message}`);
+              // 如果fetch失败，仍然尝试直接下载
+              downloadUrl = imageUrl;
+            }
+          }
           
           // 创建一个临时的 a 标签进行下载
           const link = document.createElement('a');
-          link.href = imageUrl;
+          link.href = downloadUrl;
           link.download = filename;
           link.style.display = 'none';
           
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+          
+          // 如果创建了blob URL，需要释放内存
+          if (downloadUrl !== imageUrl && downloadUrl.startsWith('blob:')) {
+            setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+          }
           
           this.completed++;
           this.updateProgress();
@@ -247,13 +274,19 @@ const PreviewPanel = ({
     
     // 立即开始下载，不等待用户确认
     (async () => {
+      console.log(`开始批量下载 ${allImages.length} 张图片...`);
+      
       for (let i = 0; i < allImages.length; i++) {
         const { url, filename } = allImages[i];
+        console.log(`\n--- 下载第 ${i + 1}/${allImages.length} 张图片 ---`);
+        console.log(`文件名: ${filename}`);
+        
         await downloadManager.downloadImage(url, filename);
         
-        // 添加下载间隔，避免浏览器限制
+        // 增加下载间隔，避免浏览器限制和CORS问题
         if (i < allImages.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 300));
+          console.log(`等待 500ms 后继续下载...`);
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
 
@@ -261,6 +294,7 @@ const PreviewPanel = ({
       console.log(`\n=== 下载完成 ===`);
       console.log(`成功: ${downloadManager.completed} 张`);
       console.log(`失败: ${downloadManager.failed} 张`);
+      console.log(`总计: ${downloadManager.total} 张`);
       
       if (downloadManager.failed > 0) {
         showToast(`下载完成！成功 ${downloadManager.completed} 张，失败 ${downloadManager.failed} 张`, 'error');

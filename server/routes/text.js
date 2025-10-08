@@ -114,4 +114,42 @@ router.post('/validate', (req, res) => {
   }
 });
 
+// 文本优化接口
+router.post('/optimize', async (req, res) => {
+  try {
+    const { text, optimizationType = 'general' } = req.body;
+
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: '文本内容不能为空'
+      });
+    }
+
+    if (text.length > 1000) {
+      return res.status(400).json({
+        success: false,
+        error: '单段文本长度不能超过1000字符'
+      });
+    }
+
+    const result = await doubaoService.optimizeText(text, optimizationType);
+    
+    res.json({
+      success: true,
+      data: {
+        originalText: text,
+        optimizedText: result,
+        optimizationType
+      }
+    });
+  } catch (error) {
+    console.error('Text optimization error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || '文本优化失败，请稍后重试'
+    });
+  }
+});
+
 module.exports = router;
