@@ -14,9 +14,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? [process.env.FRONTEND_URL, "https://vercel.app", "https://netlify.app"]
-      : "http://localhost:5173",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
