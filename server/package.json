@@ -1,0 +1,26 @@
+{
+  "name": "xiaohongshu-generator-server",
+  "version": "1.0.0",
+  "description": "Backend API server for AI image generator",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.2",
+    "axios": "^1.5.0",
+    "uuid": "^9.0.0",
+    "dotenv": "^16.3.1",
+    "fs-extra": "^11.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["api", "ai", "image-generation"],
+  "author": "Product Team",
+  "license": "MIT"
+}

@@ -1,0 +1,194 @@
+.help-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.help-modal {
+  background: white;
+  border-radius: 16px;
+  max-width: 800px;
+  max-height: 90vh;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.help-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.help-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.help-modal-content {
+  padding: 32px;
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
+}
+
+.help-section {
+  margin-bottom: 32px;
+}
+
+.help-section:last-child {
+  margin-bottom: 0;
+}
+
+.help-section h3 {
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.help-section p {
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.help-section ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #4b5563;
+}
+
+.help-section li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.help-section li strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.faq-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border-left: 4px solid #667eea;
+}
+
+.faq-item:last-child {
+  margin-bottom: 0;
+}
+
+.faq-item strong {
+  color: #1f2937;
+  font-size: 16px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.faq-item p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+}
+
+/* 滚动条样式 */
+.help-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.help-modal-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.help-modal-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.help-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .help-modal-overlay {
+    padding: 10px;
+  }
+  
+  .help-modal {
+    max-height: 95vh;
+  }
+  
+  .help-modal-header {
+    padding: 20px 24px;
+  }
+  
+  .help-modal-header h2 {
+    font-size: 20px;
+  }
+  
+  .help-modal-content {
+    padding: 24px;
+  }
+  
+  .help-section h3 {
+    font-size: 18px;
+  }
+  
+  .help-section p,
+  .help-section li {
+    font-size: 15px;
+  }
+}
